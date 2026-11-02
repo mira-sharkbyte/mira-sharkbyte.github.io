@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mira@sharkbyte:~$</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #7eb8e0;
+            font-family: monospace;
+            padding: 40px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #fff; font-size: 2.5em; margin-bottom: 5px; }
+        h2 { color: #fff; border-bottom: 1px dashed #333; padding-bottom: 10px; margin-top: 30px;}
+        .term {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .term-header {
+            color: #555;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .prompt { color: #4af626; }
+        .cursor { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .project {
+            background: #1e1e1e;
+            padding: 15px;
+            border-left: 3px solid #7eb8e0;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            font-family: monospace;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover { background: #7eb8e0; color: #111; }
+    </style>
+</head>
+<body>
+
+    <h1>Mira</h1>
+    <p>Software Developer. Python, JS, Lua.</p>
+
+    <div class="term">
+        <div class="term-header">
+            <span>mira@ssd:~/portfolio</span>
+            <span id="clock" style="color: #7eb8e0;">00:00:00</span>
+        </div>
+        <p><span class="prompt">$</span> <span id="typing"></span><span class="cursor">_</span></p>
+    </div>
+
+    <h2>About Me</h2>
+    <p>Hey, I'm Mira. I'm a software developer. I write Python, build web tools, and enjoy solving technical problems.</p>
+
+
+
+    <h2>Interactive Terminal</h2>
+    <div class="term" style="background: #1a1a1a; border: 1px solid #333; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+        <div id="terminal-output" style="color: #7eb8e0; margin-bottom: 10px;">
+            Welcome to the Mira shell.<br>Type 'help' for a list of commands.
+        </div>
+        <div style="display: flex; align-items: center;">
+            <span class="prompt" style="margin-right: 8px;">$</span>
+            <input type="text" id="terminal-input" style="background: transparent; border: none; color: #fff; font-family: monospace; font-size: 14px; width: 100%; outline: none;" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <h2>Debug the Code</h2>
+    <p>Catch the bug before it crashes the system.</p>
+    <div id="game-area" style="position: relative; height: 200px; background: #1a1a1a; border: 1px solid #333; border-radius: 5px; overflow: hidden; margin-bottom: 20px; cursor: crosshair;">
+        <div id="bug" style="position: absolute; width: 20px; height: 20px; background: #ff4757; border-radius: 50%; display: none; cursor: pointer; box-shadow: 0 0 10px #ff4757;"></div>
+        <div id="game-msg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; pointer-events: none;">Click Start to begin</div>
+    </div>
+    <button onclick="startGame()" id="start-btn">Start Debugging</button>
+    <p id="score" style="margin-top: 10px;">Score: 0</p>
+
+    <h2>Random Dev Thought</h2>
+    <p id="quote" style="font-style: italic; color: #aaa;">Click the button to generate a thought.</p>
+    <button onclick="generateQuote()">Get New Thought</button>
+
+    <script>
+        // Typing effect
+        const text = "Initializing system... Loading modules... Ready.";
+        const typingElement = document.getElementById("typing");
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                typingElement.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+        typeWriter();
+
+        // Random quote generator
+        const quotes = [
+            "It works on my machine.",
+            "Have you tried turning it off and on again?",
+            "The best code is no code at all.",
+            "There are two hard things in computer science: cache invalidation, naming things, and off-by-one errors.",
+            "Debugging: Being the detective in a crime movie where you are also the murderer.",
+            "I don't always test my code, but when I do, I do it in production."
+        ];
+
+        function generateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = quotes[randomIndex];
+        }
+
+        // Interactive Terminal
+        const termInput = document.getElementById("terminal-input");
+        const termOutput = document.getElementById("terminal-output");
+
+        termInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                const cmd = termInput.value.trim().toLowerCase();
+                termInput.value = "";
+                processCommand(cmd);
+            }
+        });
+
+        function processCommand(input) {
+            if (!input) return;
+            
+            const args = input.split(" ");
+            const cmd = args[0].toLowerCase();
+            const arg = args[1] ? args[1].toLowerCase() : "";
+            
+            let response = "";
+            
+            switch(cmd) {
+                case "help":
+                    response = "Available commands: help, whoami, date, clear, quote, shark, ls, cat";
+                    break;
+                case "whoami":
+                    response = "mira";
+                    break;
+                case "date":
+                    response = new Date().toString();
+                    break;
+                case "clear":
+                    termOutput.innerHTML = "";
+                    return;
+                case "quote":
+                    const quotes = [
+                        "It works on my machine.",
+                        "The best code is no code at all.",
+                        "Debugging: Being the detective in a crime movie where you are also the murderer."
+                    ];
+                    response = quotes[Math.floor(Math.random() * quotes.length)];
+                    break;
+                case "shark":
+                    response = "🦈 (ASCII shark removed due to bad drawing skills)";
+                    break;
+                case "ls":
+                    response = "about.txt  project.txt  contact.txt";
+                    break;
+                case "cat":
+                    if (arg === "about.txt" || arg === "about") {
+                        response = "Hey, I'm Mira. I write Python scripts to automate boring tasks, build local TTS pipelines, and experiment with AI models running directly on the machine. Keeping it simple.";
+                    } else if (arg === "project.txt" || arg === "project") {
+                        response = "No projects to display yet. Check back later.";
+                    } else if (arg === "contact.txt" || arg === "contact") {
+                        response = "Email: notuserchan.mira@gmail.com<br>GitHub: github.com/mira-sharkbyte";
+                    } else {
+                        response = `cat: ${arg}: No such file or directory`;
+                    }
+                    break;
+                default:
+                    response = `Command not found: ${cmd}. Type 'help' for a list of commands.`;
+            }
+            
+            termOutput.innerHTML += `<br><span style="color:#4af626">$ ${input}</span><br>${response}`;
+        }
+
+        // Catch the Bug Game
+        let score = 0;
+        let gameRunning = false;
+        let gameTimeout;
+        const bug = document.getElementById("bug");
+        const gameArea = document.getElementById("game-area");
+        const gameMsg = document.getElementById("game-msg");
+        const scoreDisplay = document.getElementById("score");
+        const startBtn = document.getElementById("start-btn");
+
+        function moveBug() {
+            if (!gameRunning) return;
+            const maxX = gameArea.clientWidth - 20;
+            const maxY = gameArea.clientHeight - 20;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            bug.style.left = x + "px";
+            bug.style.top = y + "px";
+            
+            // Make it harder over time by decreasing timeout
+            const speed = Math.max(400, 1000 - (score * 30));
+            gameTimeout = setTimeout(moveBug, speed);
+        }
+
+        function catchBug() {
+            if (!gameRunning) return;
+            score++;
+            scoreDisplay.innerText = "Score: " + score;
+            clearTimeout(gameTimeout);
+            moveBug();
+        }
+
+        function startGame() {
+            score = 0;
+            scoreDisplay.innerText = "Score: 0";
+            gameRunning = true;
+            gameMsg.style.display = "none";
+            bug.style.display = "block";
+            startBtn.innerText = "Restart";
+            
+            // Start after a short delay
+            gameTimeout = setTimeout(moveBug, 1000);
+            
+            // End game after 15 seconds
+            setTimeout(() => {
+                gameRunning = false;
+                bug.style.display = "none";
+                gameMsg.style.display = "block";
+                gameMsg.innerText = "Debugging complete. Final score: " + score;
+            }, 15000);
+        }
+        
+        bug.addEventListener("click", catchBug);
+
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            document.getElementById('clock').innerText = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
