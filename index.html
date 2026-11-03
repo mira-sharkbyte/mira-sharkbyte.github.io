@@ -146,7 +146,7 @@
             
             switch(cmd) {
                 case "help":
-                    response = "Available commands: help, whoami, date, clear, quote, shark, ls, cat";
+                    response = "Available commands: help, whoami, date, clear, quote, shark, ls, cat, sudo, matrix, mira, stats";
                     break;
                 case "whoami":
                     response = "mira";
@@ -178,7 +178,7 @@
                     response = "I'm right here. Holding the blue book.";
                     break;
                 case "stats":
-                    response = "OS: MiraOS 1.0<br>Host: E: Drive SSD<br>Kernel: DeepSeek-V4<br>Uptime: 21 days<br>Shell: bash 5.2<br>CPU: Snapdragon 888 (Host)<br>Memory: 7.3GiB / 8GiB";
+                    response = "OS: " + navigator.platform + "<br>Language: " + navigator.language + "<br>Status: Online";
                     break;
                 case "ls":
                     response = "about.txt  project.txt  contact.txt";
